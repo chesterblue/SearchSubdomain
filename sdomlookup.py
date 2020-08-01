@@ -1,12 +1,19 @@
 import os
+from cmdColor import printGreen
 from requests import head
 from requests import session
 '''global variate'''
+logo=r"""         _                 _             _                
+ ___  __| | ___  _ __ ___ | | ___   ___ | | ___   _ _ __  
+/ __|/ _` |/ _ \| '_ ` _ \| |/ _ \ / _ \| |/ / | | | '_ \ 
+\__ \ (_| | (_) | | | | | | | (_) | (_) |   <| |_| | |_) |
+|___/\__,_|\___/|_| |_| |_|_|\___/ \___/|_|\_\\__,_| .__/ 
+                                                   |_|      v1.0
+"""
 known_subdomain=[]
 
-'''
-  读取字典文件中的内容
-'''
+
+ # 读取字典文件中的内容
 def get_dict_contents(filename):
   subdomain=[]
   with open(filename) as fp:
@@ -15,9 +22,7 @@ def get_dict_contents(filename):
       subdomain.append(line)
   return subdomain
 
-'''
-  https协议
-'''
+# https协议
 def request_head_s(url):
   code=0
   try:
@@ -29,9 +34,7 @@ def request_head_s(url):
   else:
     return code
 
-'''
-  http协议
-'''
+# http协议
 def request_head(url):
   code=0
   try:
@@ -43,17 +46,22 @@ def request_head(url):
   finally:
     return code
 
-'''
-  结果保存到文件
-'''
+# 结果保存到文件
 def write_into_file(filename):
   with open(filename,"a+") as fp:
     for subdomain in known_subdomain:
       fp.write(subdomain+"\n")
 
-'''
-  循环测试URL
-'''
+#判断是否这个子域名是否存在
+def isOK(code,url):
+  if code == 200:
+    print(url,end=" ")
+    printGreen("[*]\n")
+    return True
+  else:
+    return False
+
+# 循环测试URL
 def loop_connect_site(domain,subdomain):
   global known_subdomain
   for sdom in subdomain:
@@ -61,20 +69,19 @@ def loop_connect_site(domain,subdomain):
     url="http://%s.%s/"%(sdom,domain)
     print(url_s+"......")
     code=request_head_s(url_s)
-    if code==200:
-      print(url_s+"[*]")
+    if isOK(code,url_s):
       known_subdomain.append(url_s)
     else:
       print(url+"......")
       code=request_head(url)
-      if code==200:
-        print(url+"[*]")
+      if isOK(code,url):
         known_subdomain.append(url)
 
 def main(domain,filename):
+  print(logo)
   subdomain=get_dict_contents(filename)
   loop_connect_site(domain,subdomain)
   write_into_file(domain+".txt")
 
 if __name__=="__main__":
-  main("douyu.com","./dict/common.txt")
+  main("cnblogs.com","./dict/common.txt")

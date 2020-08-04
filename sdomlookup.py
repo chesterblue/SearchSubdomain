@@ -1,7 +1,7 @@
-import os
+import os,click
 from cmdColor import printGreen
-from requests import head
-from requests import session
+from requests import head,session
+from tqdm import tqdm
 '''global variate'''
 logo=r"""         _                 _             _                
  ___  __| | ___  _ __ ___ | | ___   ___ | | ___   _ _ __  
@@ -55,8 +55,6 @@ def write_into_file(filename):
 #判断是否这个子域名是否存在
 def isOK(code,url):
   if code == 200:
-    print(url,end=" ")
-    printGreen("[*]\n")
     return True
   else:
     return False
@@ -64,24 +62,33 @@ def isOK(code,url):
 # 循环测试URL
 def loop_connect_site(domain,subdomain):
   global known_subdomain
-  for sdom in subdomain:
+  for sdom in tqdm(subdomain,ascii=True):
     url_s="https://%s.%s/"%(sdom,domain)
     url="http://%s.%s/"%(sdom,domain)
-    print(url_s+"......")
     code=request_head_s(url_s)
     if isOK(code,url_s):
       known_subdomain.append(url_s)
     else:
-      print(url+"......")
       code=request_head(url)
       if isOK(code,url):
         known_subdomain.append(url)
 
-def main(domain,filename):
+#输出结果
+def PrintResult():
+  global known_subdomain
+  for domain in known_subdomain:
+    print(domain,end=" ")
+    printGreen("[*]\n")
+
+@click.command()
+@click.option("-t",required="true",help="domain name of the target website")
+@click.option("-d",default="./dict/common.txt",help="brute dictionary")
+def main(t,d):
   print(logo)
-  subdomain=get_dict_contents(filename)
-  loop_connect_site(domain,subdomain)
-  write_into_file(domain+".txt")
+  subdomain=get_dict_contents(d)
+  loop_connect_site(t,subdomain)
+  PrintResult()
+  write_into_file(t+".txt")
 
 if __name__=="__main__":
-  main("cnblogs.com","./dict/common.txt")
+  main()

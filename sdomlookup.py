@@ -1,7 +1,10 @@
+# @Author: chesterblue
+
 import os,click
 from cmdColor import printGreen
 from requests import head,session
 from tqdm import tqdm
+
 '''global variate'''
 logo=r"""         _                 _             _                
  ___  __| | ___  _ __ ___ | | ___   ___ | | ___   _ _ __  

@@ -56,3 +56,9 @@ def printGreen(mess):
     set_cmd_text_color(FOREGROUND_GREEN)
     sys.stdout.write(mess)
     resetColor()
+
+#red
+def printRed(mess):
+    set_cmd_text_color(FOREGROUND_RED)
+    sys.stdout.write(mess)
+    resetColor()

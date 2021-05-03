@@ -1,9 +1,9 @@
-## Subdomain lookup V1.1
+## Subdomain lookup V1.2
 developing.......  
 The functions which are implemented:  
 Brute  
 multiple thread  
-GUI
+GUI(could select dictionary which you add by yourself)
 ### Usage
 #### cmd\shell:
 `-t domain name of the target website`  
@@ -12,5 +12,5 @@ GUI
 ![Demonstration](https://github.com/chesterblue/photos/blob/master/subdomain.png)  
 
 #### GUI:
-![Demonstration](https://github.com/chesterblue/photos/blob/master/GUI_1.png)
+![Demonstration](https://github.com/chesterblue/photos/blob/master/GUI_2.png)
 

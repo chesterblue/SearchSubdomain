@@ -1,7 +1,7 @@
 # @Author: chesterblue
 # @File Name:sdlGUI.py
 
-import sys, log
+import sys, log, os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from PyQt5.QtCore import QThread, pyqtSignal
 from gui import *
@@ -17,14 +17,19 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.itemmodel = QtCore.QStringListModel(self)
         self.listView.setModel(self.itemmodel)
 
+        # 读取字典目录下所有字典名
+        self.get_all_file_name()
+
         # start按钮绑定多线程槽函数，执行任务
         self.pushButton.clicked.connect(self.execute)
 
     def execute(self):
         # 获取用户输入的domain值
         self.getDomain()
+        # 获取用户在comboBox选择的字典名
+        self.getDictname()
         # 实例化线程对象
-        self.work = MyThread(self.domain)
+        self.work = MyThread(self.domain,self.dict)
         # 启动线程
         self.work.start()
         # 线程自定义信号连接的槽函数
@@ -34,6 +39,15 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         """获取提交的domain值，并判断是否合法"""
         self.domain = self.lineEdit.text()
 
+    def get_all_file_name(self):
+        """获取目录下所有字典文件"""
+        files = os.listdir("./dict")
+        for file_name in files:
+            self.comboBox.addItem(file_name)
+
+    def getDictname(self):
+        """获取选择的字典文件"""
+        self.dict = "./dict/"+self.comboBox.currentText()
 
     def addRes(self,url):
         try:
@@ -63,18 +77,20 @@ class MyThread(QThread):
     """自定义Thread类，实现实时输出功能"""
     # 自定义信号对象。参数str就代表这个信号可以传一个字符串
     trigger = pyqtSignal(str)
-    def __init__(self, domain):
+    def __init__(self, domain, dict):
         super(MyThread, self).__init__()
         # 从lineEdit中获取输入的域名
         self.domain = domain
+        # 从comboBox中获取的字典名
+        self.dict = dict
 
 
     def run(self):
         """重写run函数,执行爆破任务"""
         log.write("[UI]get domain " + self.domain)
         # 测试环境选择直接获取字典文件
-        subdomain = sdl.get_dict_contents("./dict/test.txt")
-        log.write("[UI]get subdomain from dictionary")
+        subdomain = sdl.get_dict_contents(self.dict)
+        log.write("[UI]get subdomain from dictionary "+self.dict)
         self.loop_connect_site(self.domain, subdomain)
 
 

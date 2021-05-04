@@ -22,10 +22,9 @@ FOREGROUND_PINK = 0x0d # pink.
 FOREGROUND_YELLOW = 0x0e # yellow.
 FOREGROUND_WHITE = 0x0f # white.
 
- 
 # 背景颜色定义 background colors
-BACKGROUND_BLUE = 0x10 # dark blue.
-BACKGROUND_GREEN = 0x20 # dark green.
+BACKGROUND_DARKBLUE = 0x10 # dark blue.
+BACKGROUND_DARKGREEN = 0x20 # dark green.
 BACKGROUND_DARKSKYBLUE = 0x30 # dark skyblue.
 BACKGROUND_DARKRED = 0x40 # dark red.
 BACKGROUND_DARKPINK = 0x50 # dark pink.

@@ -1,8 +1,8 @@
 # @Author: chesterblue
 
 import os, click, queue
-from lib import log
-from lib.cmdColor import printGreen, printRed
+from tools import log
+from tools.cmdColor import printGreen, printRed
 from requests import head
 from threading import Thread
 

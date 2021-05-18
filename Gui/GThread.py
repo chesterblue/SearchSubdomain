@@ -1,7 +1,7 @@
 # @Author: chesterblue
 # @File Name:GThread.py
 
-from lib import log
+from tools import log
 from PyQt5.QtCore import QThread, pyqtSignal
 from math import floor
 import Sdl.sdlcore as sdl
@@ -138,7 +138,7 @@ class GMultiThreadBrute(QThread):
         for i in range(thread_num):
             t = Thread(target=target_func, args=(search_queue, domain))
             t.start()
-        print(search_queue.unfinished_tasks)
+        # print(search_queue.unfinished_tasks)
 
     def alg(self, dividend, divisor):
         """计算进度条，dividend:被除数 divisor：除数"""

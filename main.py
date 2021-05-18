@@ -2,7 +2,7 @@
 # @File Name:main.py
 
 from Sdl.sdlcore import *
-import lib.log as log
+import tools.log as log
 
 @click.command()
 @click.option("-t", required="true", help="domain name of the target website")

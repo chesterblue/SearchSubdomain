@@ -1,10 +1,11 @@
 # @Author: chesterblue
 # @File Name:bing.py.py
 
+import re
+
+from bs4 import BeautifulSoup
 from requests import Session
 from requests.exceptions import Timeout, ConnectionError
-from bs4 import BeautifulSoup
-import re
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 '

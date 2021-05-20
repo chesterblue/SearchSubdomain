@@ -1,25 +1,23 @@
 # @Author: chesterblue
 # @File Name:google.py.py
 
-from requests import Session, get
-from requests.exceptions import Timeout, ConnectionError
-from bs4 import BeautifulSoup
 import re
+
+from bs4 import BeautifulSoup
+from requests import Session
+from requests.exceptions import Timeout, ConnectionError
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 '
                   'Safari/537.36',
 }
-proxies = {
-    'http': 'http://127.0.0.1:7890',
-    'https': 'https://127.0.0.1:7890'
-}
 
 
 class Client():
-    def __init__(self, domain):
+    def __init__(self, domain, proxies=None):
         self.domain = domain
         self.headers = headers
+        self.proxies = proxies
         self.page_num = 0
         self.base_url = "https://www.google.com/search?q=site%%3a%s&start=%d"
         self.subdomains = []
@@ -31,7 +29,7 @@ class Client():
             page_num = num * 10
             target = self.base_url % (self.domain, page_num)
             try:
-                html = s.get(target, headers=self.headers, proxies=proxies).content.decode()
+                html = s.get(target, headers=self.headers, proxies=self.proxies).content.decode()
                 html = BeautifulSoup(html, features="html.parser")
                 self.find_subdomain(html)
             except Timeout:

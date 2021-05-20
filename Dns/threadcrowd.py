@@ -14,23 +14,23 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 '
                   'Safari/537.36',
 }
-proxies = {
-    'http': 'http://127.0.0.1:7890',
-    'https': 'https://127.0.0.1:7890'
-}
 
 
 class Client():
-    def __init__(self, domain):
+    """
+    必须代理到国外，如果在国内访问会经过cdn，无法获取到返回值
+    """
+    def __init__(self, domain, proxies):
         self.domain = domain
         self.headers = headers
+        self.proxies = proxies
         self.base_url = "https://www.threatcrowd.org/searchApi/v2/domain/report/?domain=%s"
         self.subdomains = []
 
     def run(self):
         target = self.base_url % self.domain
         try:
-            html = get(url=target, headers=self.headers, proxies=proxies, verify=False).content.decode()
+            html = get(url=target, headers=self.headers, proxies=self.proxies, verify=False).content.decode()
             jdata = json.loads(html)
             self.get_subdomains(jdata)
         except (Timeout, ConnectionError):

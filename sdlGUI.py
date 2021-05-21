@@ -5,6 +5,16 @@ import sys, os
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from Gui.gui import *
 from Gui.GThread import *
+import configparser
+import tools.deduplicate as deduplicate
+
+"""
+global variable
+"""
+config = configparser.ConfigParser()
+config.read("./conf/default.ini")
+proxies = config['proxies']
+virus_api_key = config['ApiKey']['virusApiKey']
 
 
 class MyWindow(QMainWindow, Ui_MainWindow):
@@ -14,6 +24,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # listview数据存储
         self.itemmodel = QtCore.QStringListModel(self)
         self.listView.setModel(self.itemmodel)
+        # 可选功能的listview数据存储
+        self.itemmodel_1 = QtCore.QStringListModel(self)
+        self.listView_1.setModel(self.itemmodel_1)
 
         # 读取字典目录下所有字典名
         self.get_all_file_name()
@@ -36,6 +49,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # 启动线程
         self.work.start()
         self.pBarWork.start()
+        self.start_optional_features(proxies, virus_api_key)
         # 线程自定义信号连接的槽函数
         self.work.trigger.connect(self.addUrl)
         # work.signal --> pBarWork.signal --> update_progressBar
@@ -85,6 +99,32 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def update_progressBar(self, i):
         """更新进度条的值"""
         self.progressBar.setValue(i)
+
+    def start_optional_features(self, proxies, virus_api_key):
+        """判断并执行可选的爬虫和DNS解析功能"""
+        search_engine = []
+        if self.checkBox_1:
+            search_engine.append("baidu")
+        if self.checkBox_2:
+            search_engine.append("bing")
+        if self.checkBox_3:
+            search_engine.append("google")
+        if search_engine:
+            self.se_work = GSpider(self.domain, search_engine, proxies)
+            self.se_work.start()
+            self.se_work.trigger_subdomains.connect(self.get_spider_result)
+        if self.checkBox_4:
+            self.dns_work = GDns(self.domain, virus_api_key, proxies)
+            self.dns_work.start()
+            self.dns_work.trigger_subdomains.connect(self.get_dns_result)
+
+    def get_spider_result(self, subdomains: list):
+        self.itemmodel_1.setStringList(subdomains)
+
+    def get_dns_result(self, subdomains: list):
+        self.itemmodel_1.setStringList(subdomains)
+
+
 
 
 if __name__ == '__main__':

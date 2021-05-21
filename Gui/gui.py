@@ -18,16 +18,23 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(802, 597)
+        # 禁止最大化按钮
+        MainWindow.setWindowFlags(QtCore.Qt.WindowMinimizeButtonHint|QtCore.Qt.WindowCloseButtonHint)
+        # 禁止拉伸窗口大小
+        MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.widget = QtWidgets.QWidget(self.centralwidget)
         self.widget.setGeometry(QtCore.QRect(11, 22, 771, 521))
         self.widget.setObjectName("widget")
+        # 垂直布局
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.widget)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
+        # 水平布局
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
+        # 顶部：lineEdit、label、spinBox、comboBox、button -------------start:top-----------------------------------
         self.label = QtWidgets.QLabel(self.widget)
         self.label.setObjectName("label")
         self.horizontalLayout.addWidget(self.label)
@@ -53,7 +60,10 @@ class Ui_MainWindow(object):
         self.pushButton = QtWidgets.QPushButton(self.widget)
         self.pushButton.setObjectName("pushButton")
         self.horizontalLayout.addWidget(self.pushButton)
+        # 第一层水平布局添加到总体的垂直布局中
         self.verticalLayout_2.addLayout(self.horizontalLayout)
+        # ---------------------------------------------------------end:top------------------------------------------
+        # progressBar、checkBox、listView-------------------------start:middle---------------------------------------
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.progressBar = QtWidgets.QProgressBar(self.widget)
@@ -61,10 +71,39 @@ class Ui_MainWindow(object):
         self.progressBar.setTextVisible(False)
         self.progressBar.setObjectName("progressBar")
         self.verticalLayout.addWidget(self.progressBar)
+        # checkBox水平布局区域-----------------------------start-------------------------------
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.checkBox_1 = QtWidgets.QCheckBox()
+        self.checkBox_1.setObjectName("checkBox_1")
+        self.horizontalLayout_2.addWidget(self.checkBox_1)
+        self.checkBox_2 = QtWidgets.QCheckBox()
+        self.checkBox_2.setObjectName("checkBox_2")
+        self.horizontalLayout_2.addWidget(self.checkBox_2)
+        self.checkBox_3 = QtWidgets.QCheckBox()
+        self.checkBox_3.setObjectName("checkBox_3")
+        self.horizontalLayout_2.addWidget(self.checkBox_3)
+        self.checkBox_4 = QtWidgets.QCheckBox()
+        self.checkBox_4.setObjectName("checkBox_4")
+        self.horizontalLayout_2.addWidget(self.checkBox_4)
+        # 四个checkBox的水平布局添加到和进度条组成的垂直布局中
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        # checkBox水平布局区域-----------------------------end-------------------------------
+        # 两个listView水平布局区域--------------------------start--------------------------------
+        self.horizontalLayout_1 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_1.setObjectName("horizontalLayout_1")
         self.listView = QtWidgets.QListView(self.widget)
         self.listView.setObjectName("listView")
-        self.verticalLayout.addWidget(self.listView)
+        self.horizontalLayout_1.addWidget(self.listView)
+        self.listView_1 = QtWidgets.QListView(self.widget)
+        self.listView_1.setObjectName("listView")
+        self.horizontalLayout_1.addWidget(self.listView_1)
+        # 两个listView水平布局区域--------------------------end--------------------------------
+        # 两个水平分布的listView添加到和进度条组成的垂直布局中
+        self.verticalLayout.addLayout(self.horizontalLayout_1)
+        # 进度条、listView添加到总体的垂直布局中
         self.verticalLayout_2.addLayout(self.verticalLayout)
+        # ----------------------------------------end:middle----------------------------------------------------------
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 802, 23))
@@ -79,9 +118,13 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Subdomain lookup V1.3"))
         self.label.setText(_translate("MainWindow", "站点"))
         self.label_3.setText(_translate("MainWindow", "字典"))
         self.comboBox.setPlaceholderText(_translate("MainWindow", "common.txt"))
         self.label_2.setText(_translate("MainWindow", "线程"))
         self.pushButton.setText(_translate("MainWindow", "Start"))
+        self.checkBox_1.setText(_translate("MainWindow", "Baidu"))
+        self.checkBox_2.setText(_translate("MainWindow", "Bing"))
+        self.checkBox_3.setText(_translate("MainWindow", "Google"))
+        self.checkBox_4.setText(_translate("MainWindow", "DNS resolution"))

@@ -6,7 +6,11 @@ from PyQt5.QtCore import QThread, pyqtSignal
 from math import floor
 import Sdl.sdlcore as sdl
 from threading import Thread
+from Se import baidu, bing, google
+from Dns import threadcrowd, virusTotal
 import queue
+import tools.deduplicate as deduplicate
+
 
 class GThreadBrute(QThread):
     """自定义Thread类，实现实时输出功能"""
@@ -14,6 +18,7 @@ class GThreadBrute(QThread):
     trigger = pyqtSignal(str)
     # 自定义信号，更新进度条
     progressBarValue = pyqtSignal(int)
+
     def __init__(self, domain, dict):
         super(GThreadBrute, self).__init__()
         # 从lineEdit中获取输入的域名
@@ -53,14 +58,14 @@ class GThreadBrute(QThread):
                     self.trigger.emit(url)
             count += 1
             # 计算并发送进度条的值给进度条线程
-            self.progressBarValue.emit(self.alg(count,self.subdomainCount))
+            self.progressBarValue.emit(self.alg(count, self.subdomainCount))
         # 探测结束后发送结束信号
         self.trigger.emit("finish")
         log.write("[UI]finish connect")
 
     def alg(self, dividend, divisor):
         """计算进度条，dividend:被除数 divisor：除数"""
-        return floor((dividend/divisor)*100)
+        return floor((dividend / divisor) * 100)
 
 
 class GProgressbar(QThread):
@@ -78,6 +83,7 @@ class GMultiThreadBrute(QThread):
     progressBarValue = pyqtSignal(int)
     # 声明已发送的任务数量，初始值为0
     transmited_count = 0
+
     def __init__(self, domain, dict, thread_num):
         super(GMultiThreadBrute, self).__init__()
         # 从lineEdit中获取输入的域名
@@ -97,7 +103,7 @@ class GMultiThreadBrute(QThread):
         log.write("[UI]get subdomain from dictionary " + self.dict)
         # 创建多线程传送数据所需的队列
         search_queue = queue.Queue(len(subdomain))
-        log.write("[UI]finish new queue "+str(self.thread_num))
+        log.write("[UI]finish new queue " + str(self.thread_num))
         self.init_queue(search_queue, subdomain)
         log.write("[UI]Init queue")
         self.multi_queue_connect(self.domain, search_queue, self.thread_num, self.connect_site)
@@ -105,7 +111,7 @@ class GMultiThreadBrute(QThread):
         search_queue.join()
 
     # 循环测试每个子站点
-    def connect_site(self,search_queue, domain):
+    def connect_site(self, search_queue, domain):
         self.known_subdomain = []
         while not search_queue.empty():
             sdom = search_queue.get(block=True, timeout=1)
@@ -127,14 +133,13 @@ class GMultiThreadBrute(QThread):
             search_queue.task_done()
             self.transmit_finishd_count(search_queue.unfinished_tasks)
 
-
     # 初始化队列
-    def init_queue(self,search_queue, subdomain):
+    def init_queue(self, search_queue, subdomain):
         for i in subdomain:
             search_queue.put(i)
 
     # 多线程
-    def multi_queue_connect(self,domain, search_queue, thread_num, target_func):
+    def multi_queue_connect(self, domain, search_queue, thread_num, target_func):
         for i in range(thread_num):
             t = Thread(target=target_func, args=(search_queue, domain))
             t.start()
@@ -142,7 +147,7 @@ class GMultiThreadBrute(QThread):
 
     def alg(self, dividend, divisor):
         """计算进度条，dividend:被除数 divisor：除数"""
-        return floor((dividend/divisor)*100)
+        return floor((dividend / divisor) * 100)
 
     def transmit_finishd_count(self, unfinisd_count):
         """通过queue中的unfinished_tasks属性计算进度条所需的值并发送给进度条"""
@@ -153,10 +158,58 @@ class GMultiThreadBrute(QThread):
             # 探测结束后发送结束信号
             self.trigger.emit("finish")
             log.write("[UI]finish connect")
-        elif self.transmited_count !=  finished_count:
+        elif self.transmited_count != finished_count:
             # 计算并发送进度条的值给进度条线程
             self.progressBarValue.emit(self.alg(finished_count, self.subdomainCount))
             # 发送后更新已发送的值
             self.transmited_count = finished_count
 
 
+class GSpider(QThread):
+    # 自定义信号对象。参数list就代表这个信号可以传一个列表
+    #
+    trigger_subdomains = pyqtSignal(list)
+
+    def __init__(self, domain: str, search_engines: list, proxies=None):
+        super(GSpider, self).__init__()
+        self.domain = domain
+        self.search_engines = search_engines
+        self.proxies = proxies
+        self.subdomains = []
+
+    def run(self):
+        for client in self.search_engines:
+            if client == 'baidu':
+                Baidu = baidu.Client(self.domain)
+                self.subdomains.extend(Baidu.run())
+            elif client == 'google':
+                Google = google.Client(self.domain, proxies=self.proxies)
+                self.subdomains.extend(Google.run())
+            elif client == 'bing':
+                Bing = bing.Client(self.domain)
+                self.subdomains.extend(Bing.run())
+        self.subdomains = deduplicate.remove_duplicate_data(self.subdomains)
+        self.trigger_subdomains.emit(self.subdomains)
+        # return self.subdomains
+
+class GDns(QThread):
+    # 自定义信号对象。参数list就代表这个信号可以传一个列表
+    #
+    trigger_subdomains = pyqtSignal(list)
+    def __init__(self, domain: str, virus_api_key: str, proxies=None):
+        super(GDns, self).__init__()
+        self.domain = domain
+        self.virus_api_key = virus_api_key
+        self.proxies = proxies
+        self.subdomains = []
+
+    def run(self):
+        # VirusTotal DNS resolution
+        VirusTotal = virusTotal.Client(self.domain, self.virus_api_key)
+        self.subdomains.extend(VirusTotal.run())
+        # threadcrowd DNS resolution
+        ThreadCrowd = threadcrowd.Client(self.domain, self.proxies)
+        self.subdomains.extend(ThreadCrowd.run())
+        self.subdomains = deduplicate.remove_duplicate_data(self.subdomains)
+        self.trigger_subdomains.emit(self.subdomains)
+        # return self.subdomains

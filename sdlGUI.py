@@ -7,6 +7,7 @@ from Gui.gui import *
 from Gui.GThread import *
 import configparser
 import tools.deduplicate as deduplicate
+from tools import log
 
 """
 global variable
@@ -44,17 +45,17 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # 实例化爆破子域名线程对象
         # self.work = GThreadBrute(self.domain,self.dict)
         # 实例化多线程爆破子域名线程对象
-        self.work = GMultiThreadBrute(self.domain, self.dict, self.thread_num)
-        self.pBarWork = GProgressbar()
+        # self.work = GMultiThreadBrute(self.domain, self.dict, self.thread_num, parent=self)
+        # self.pBarWork = GProgressbar()
         # 启动线程
-        self.work.start()
-        self.pBarWork.start()
+        # self.work.start()
+        # self.pBarWork.start()
         self.start_optional_features(proxies, virus_api_key)
         # 线程自定义信号连接的槽函数
-        self.work.trigger.connect(self.addUrl)
+        # self.work.trigger.connect(self.addUrl)
         # work.signal --> pBarWork.signal --> update_progressBar
-        self.pBarWork.progressBarValue.connect(self.work.progressBarValue)
-        self.work.progressBarValue.connect(self.update_progressBar)
+        # self.pBarWork.progressBarValue.connect(self.work.progressBarValue)
+        # self.work.progressBarValue.connect(self.update_progressBar)
 
     def getDomain(self):
         """获取提交的domain值，并判断是否合法"""
@@ -103,17 +104,21 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def start_optional_features(self, proxies, virus_api_key):
         """判断并执行可选的爬虫和DNS解析功能"""
         search_engine = []
-        if self.checkBox_1:
+        if self.checkBox_1.isChecked():
+            log.write("baidu start")
             search_engine.append("baidu")
-        if self.checkBox_2:
+        if self.checkBox_2.isChecked():
+            log.write("bing start")
             search_engine.append("bing")
-        if self.checkBox_3:
+        if self.checkBox_3.isChecked():
+            log.write("google start")
             search_engine.append("google")
         if search_engine:
             self.se_work = GSpider(self.domain, search_engine, proxies)
             self.se_work.start()
             self.se_work.trigger_subdomains.connect(self.get_spider_result)
-        if self.checkBox_4:
+        if self.checkBox_4.isChecked():
+            log.write("DNS start")
             self.dns_work = GDns(self.domain, virus_api_key, proxies)
             self.dns_work.start()
             self.dns_work.trigger_subdomains.connect(self.get_dns_result)

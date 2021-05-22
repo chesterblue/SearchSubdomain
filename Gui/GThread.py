@@ -190,6 +190,7 @@ class GSpider(QThread):
                 self.subdomains.extend(Bing.run())
         self.subdomains = deduplicate.remove_duplicate_data(self.subdomains)
         self.trigger_subdomains.emit(self.subdomains)
+        log.write("Spider finished")
         # return self.subdomains
 
 class GDns(QThread):
@@ -212,4 +213,5 @@ class GDns(QThread):
         self.subdomains.extend(ThreadCrowd.run())
         self.subdomains = deduplicate.remove_duplicate_data(self.subdomains)
         self.trigger_subdomains.emit(self.subdomains)
+        log.write("DNS finished")
         # return self.subdomains

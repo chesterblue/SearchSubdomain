@@ -43,20 +43,19 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # 获取用户在spinBox中设置的线程数
         self.getThreadnum()
         # 实例化爆破子域名线程对象
-        # self.work = GThreadBrute(self.domain,self.dict)
+        self.work = GThreadBrute(self.domain,self.dict)
         # 实例化多线程爆破子域名线程对象
-        # self.work = GMultiThreadBrute(self.domain, self.dict, self.thread_num, parent=self)
-        # self.pBarWork = GProgressbar()
+        self.work = GMultiThreadBrute(self.domain, self.dict, self.thread_num)
+        self.pBarWork = GProgressbar()
         # 启动线程
-        # self.work.start()
-        # self.pBarWork.start()
+        self.work.start()
+        self.pBarWork.start()
         self.start_optional_features(proxies, virus_api_key)
         # 线程自定义信号连接的槽函数
-        # self.work.trigger.connect(self.addUrl)
+        self.work.trigger.connect(self.addUrl)
         # work.signal --> pBarWork.signal --> update_progressBar
-        # self.pBarWork.progressBarValue.connect(self.work.progressBarValue)
-        # self.work.progressBarValue.connect(self.update_progressBar)
-
+        self.pBarWork.progressBarValue.connect(self.work.progressBarValue)
+        self.work.progressBarValue.connect(self.update_progressBar)
     def getDomain(self):
         """获取提交的domain值，并判断是否合法"""
         self.domain = self.lineEdit.text()

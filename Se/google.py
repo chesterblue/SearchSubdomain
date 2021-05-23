@@ -6,6 +6,7 @@ import re
 from bs4 import BeautifulSoup
 from requests import Session
 from requests.exceptions import Timeout, ConnectionError
+from tools import log
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 '
@@ -33,13 +34,13 @@ class Client():
                 html = BeautifulSoup(html, features="html.parser")
                 self.find_subdomain(html)
             except Timeout:
-                print("Timeout!")
+                log.write("Timeout!")
             except ConnectionError:
-                print("Internet Error!")
+                log.write("Internet Error!")
             except TypeError:
-                print("Type Error!")
+                log.write("Type Error!")
             except Exception:
-                print("Unknown Error!")
+                log.write("Unknown Error!")
         return self.subdomains
 
     def find_subdomain(self, html):

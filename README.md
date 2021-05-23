@@ -1,4 +1,4 @@
-## Subdomain lookup V1.3
+## Subdomain lookup V1.5
 developing.......  
 The functions which are implemented:  
 Brute  

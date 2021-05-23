@@ -72,7 +72,7 @@ def dns_resolution(domain):
 
 def data_processing(web_subdomains):
     web_subdomains = deduplicate.remove_duplicate_data(web_subdomains)
-    print("web spider or dns resolution:")
+    print("------------------------web spider or dns resolution:-----------------------------")
     for subdomain in web_subdomains:
         print(subdomain)
 

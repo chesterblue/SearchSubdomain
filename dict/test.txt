@@ -30,17 +30,3 @@ news
 calendar
 shop
 potala
-mobile
-web
-sip
-mobilemail
-ns
-cpanel
-www1
-whm
-new
-img
-search
-support
-mail2
-media

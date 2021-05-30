@@ -169,6 +169,8 @@ class GSpider(QThread):
     # 自定义信号对象。参数list就代表这个信号可以传一个列表
     #
     trigger_subdomains = pyqtSignal(list)
+    # 发送结束或开始信号
+    trigger_tip = pyqtSignal(str)
 
     def __init__(self, domain: str, search_engines: list, proxies=None):
         super(GSpider, self).__init__()
@@ -178,6 +180,7 @@ class GSpider(QThread):
         self.subdomains = []
 
     def run(self):
+        self.trigger_tip.emit("start")
         for client in self.search_engines:
             if client == 'baidu':
                 Baidu = baidu.Client(self.domain)
@@ -191,12 +194,17 @@ class GSpider(QThread):
         self.subdomains = deduplicate.remove_duplicate_data(self.subdomains)
         self.trigger_subdomains.emit(self.subdomains)
         log.write("Spider finished")
+        self.trigger_tip.emit("finish")
         # return self.subdomains
+
 
 class GDns(QThread):
     # 自定义信号对象。参数list就代表这个信号可以传一个列表
     #
     trigger_subdomains = pyqtSignal(list)
+    # 发送结束或开始信号
+    trigger_tip = pyqtSignal(str)
+
     def __init__(self, domain: str, virus_api_key: str, proxies=None):
         super(GDns, self).__init__()
         self.domain = domain
@@ -205,6 +213,7 @@ class GDns(QThread):
         self.subdomains = []
 
     def run(self):
+        self.trigger_tip.emit("start")
         # VirusTotal DNS resolution
         VirusTotal = virusTotal.Client(self.domain, self.virus_api_key)
         self.subdomains.extend(VirusTotal.run())
@@ -214,4 +223,13 @@ class GDns(QThread):
         self.subdomains = deduplicate.remove_duplicate_data(self.subdomains)
         self.trigger_subdomains.emit(self.subdomains)
         log.write("DNS finished")
+        self.trigger_tip.emit("finish")
         # return self.subdomains
+
+
+class GStatusbar(QThread):
+    """GUI窗口中的状态栏子线程"""
+    statusBarValue = pyqtSignal(str)  # 状态栏
+
+    def __init__(self):
+        super(GStatusbar, self).__init__()

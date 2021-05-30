@@ -17,7 +17,7 @@ config.read("./conf/default.ini")
 default_dict = "./dict/" + config['cmd']['dictName']
 default_thread_num = int(config['cmd']['threadNum'])
 proxies = config['proxies']
-virus_api_key = config['ApiKey']['virusApiKey']
+virus_api_key = config['ApiKey']['virusapikey']
 
 
 def brute(domain, dict_name, thread_num):

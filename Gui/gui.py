@@ -13,6 +13,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+IconImg = "./img/logo.png"
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -22,6 +23,8 @@ class Ui_MainWindow(object):
         MainWindow.setWindowFlags(QtCore.Qt.WindowMinimizeButtonHint|QtCore.Qt.WindowCloseButtonHint)
         # 禁止拉伸窗口大小
         MainWindow.setFixedSize(MainWindow.width(), MainWindow.height())
+        # 设置窗口图标
+        MainWindow.setWindowIcon(QtGui.QIcon(IconImg))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.widget = QtWidgets.QWidget(self.centralwidget)
@@ -108,7 +111,16 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 802, 23))
         self.menubar.setObjectName("menubar")
+        self.menu = QtWidgets.QMenu(self.menubar)
+        self.menu.setObjectName("menu")
         MainWindow.setMenuBar(self.menubar)
+        self.actionproxy = QtWidgets.QAction(MainWindow)
+        self.actionproxy.setObjectName("actionproxy")
+        self.actionAPI_Key = QtWidgets.QAction(MainWindow)
+        self.actionAPI_Key.setObjectName("actionAPI_Key")
+        self.menu.addAction(self.actionproxy)
+        self.menu.addAction(self.actionAPI_Key)
+        self.menubar.addAction(self.menu.menuAction())
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
@@ -128,3 +140,165 @@ class Ui_MainWindow(object):
         self.checkBox_2.setText(_translate("MainWindow", "Bing"))
         self.checkBox_3.setText(_translate("MainWindow", "Google"))
         self.checkBox_4.setText(_translate("MainWindow", "DNS resolution"))
+        self.menu.setTitle(_translate("MainWindow", "设置"))
+        self.actionproxy.setText(_translate("MainWindow", "代理"))
+        self.actionAPI_Key.setText(_translate("MainWindow", "API Key"))
+
+
+class Ui_SetProxy(object):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(410, 296)
+        # 禁止最大化按钮
+        Dialog.setWindowFlags(QtCore.Qt.WindowMinimizeButtonHint | QtCore.Qt.WindowCloseButtonHint)
+        # 禁止拉伸窗口大小
+        Dialog.setFixedSize(Dialog.width(), Dialog.height())
+        # 设置窗口图标
+        Dialog.setWindowIcon(QtGui.QIcon(IconImg))
+        self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
+        self.buttonBox.setGeometry(QtCore.QRect(30, 240, 341, 32))
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName("buttonBox")
+        self.layoutWidget = QtWidgets.QWidget(Dialog)
+        self.layoutWidget.setGeometry(QtCore.QRect(30, 40, 351, 81))
+        self.layoutWidget.setObjectName("layoutWidget")
+        self.gridLayout = QtWidgets.QGridLayout(self.layoutWidget)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout.setObjectName("gridLayout")
+        self.https_port = QtWidgets.QSpinBox(self.layoutWidget)
+        self.https_port.setMaximum(65535)
+        self.https_port.setObjectName("https_port")
+        self.gridLayout.addWidget(self.https_port, 2, 2, 1, 1)
+        self.label_2 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_2.setObjectName("label_2")
+        self.gridLayout.addWidget(self.label_2, 2, 0, 1, 1)
+        self.label = QtWidgets.QLabel(self.layoutWidget)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 1, 0, 1, 1)
+        self.https_address = QtWidgets.QLineEdit(self.layoutWidget)
+        self.https_address.setObjectName("https_address")
+        self.gridLayout.addWidget(self.https_address, 2, 1, 1, 1)
+        self.http_address = QtWidgets.QLineEdit(self.layoutWidget)
+        self.http_address.setObjectName("http_address")
+        self.gridLayout.addWidget(self.http_address, 1, 1, 1, 1)
+        self.label_4 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_4.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_4.setObjectName("label_4")
+        self.gridLayout.addWidget(self.label_4, 0, 2, 1, 1)
+        self.http_port = QtWidgets.QSpinBox(self.layoutWidget)
+        self.http_port.setMaximum(65535)
+        self.http_port.setObjectName("http_port")
+        self.gridLayout.addWidget(self.http_port, 1, 2, 1, 1)
+        self.label_3 = QtWidgets.QLabel(self.layoutWidget)
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setObjectName("label_3")
+        self.gridLayout.addWidget(self.label_3, 0, 1, 1, 1)
+        self.testProxyButton = QtWidgets.QPushButton(Dialog)
+        self.testProxyButton.setGeometry(QtCore.QRect(30, 160, 75, 23))
+        self.testProxyButton.setObjectName("testProxyButton")
+
+        # 设置tab顺序
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+        Dialog.setTabOrder(self.http_address, self.http_port)
+        Dialog.setTabOrder(self.http_port, self.https_address)
+        Dialog.setTabOrder(self.https_address, self.https_port)
+        Dialog.setTabOrder(self.https_port, self.testProxyButton)
+
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "代理"))
+        self.label_2.setText(_translate("Dialog", "HTTPS:"))
+        self.label.setText(_translate("Dialog", "HTTP:"))
+        self.label_4.setText(_translate("Dialog", "port"))
+        self.label_3.setText(_translate("Dialog", "ip/domain name"))
+        self.testProxyButton.setText(_translate("Dialog", "Test"))
+
+
+class Ui_TestProxy(object):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(379, 160)
+        # 禁止最大化按钮
+        Dialog.setWindowFlags(QtCore.Qt.WindowMinimizeButtonHint | QtCore.Qt.WindowCloseButtonHint)
+        # 禁止拉伸窗口大小
+        Dialog.setFixedSize(Dialog.width(), Dialog.height())
+        # 设置窗口图标
+        Dialog.setWindowIcon(QtGui.QIcon(IconImg))
+        self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
+        self.buttonBox.setGeometry(QtCore.QRect(30, 120, 331, 31))
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName("buttonBox")
+        self.widget = QtWidgets.QWidget(Dialog)
+        self.widget.setGeometry(QtCore.QRect(20, 40, 321, 61))
+        self.widget.setObjectName("widget")
+        self.verticalLayout = QtWidgets.QVBoxLayout(self.widget)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.label_2 = QtWidgets.QLabel(self.widget)
+        self.label_2.setObjectName("label_2")
+        self.verticalLayout.addWidget(self.label_2)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.label = QtWidgets.QLabel(self.widget)
+        self.label.setObjectName("label")
+        self.horizontalLayout.addWidget(self.label)
+        self.lineEdit = QtWidgets.QLineEdit(self.widget)
+        self.lineEdit.setObjectName("lineEdit")
+        self.horizontalLayout.addWidget(self.lineEdit)
+        self.verticalLayout.addLayout(self.horizontalLayout)
+
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "测试代理"))
+        self.label_2.setText(_translate("Dialog", "输入任意URL以检查代理"))
+        self.label.setText(_translate("Dialog", "链接/URL"))
+        self.lineEdit.setText(_translate("Dialog", "http://"))
+
+
+class Ui_SetAPI(object):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(400, 300)
+        # 禁止最大化按钮
+        Dialog.setWindowFlags(QtCore.Qt.WindowMinimizeButtonHint | QtCore.Qt.WindowCloseButtonHint)
+        # 禁止拉伸窗口大小
+        Dialog.setFixedSize(Dialog.width(), Dialog.height())
+        # 设置窗口图标
+        Dialog.setWindowIcon(QtGui.QIcon(IconImg))
+        self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
+        self.buttonBox.setGeometry(QtCore.QRect(30, 240, 341, 32))
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName("buttonBox")
+        self.groupBox = QtWidgets.QGroupBox(Dialog)
+        self.groupBox.setGeometry(QtCore.QRect(50, 60, 301, 111))
+        self.groupBox.setObjectName("groupBox")
+        self.widget = QtWidgets.QWidget(self.groupBox)
+        self.widget.setGeometry(QtCore.QRect(10, 40, 281, 21))
+        self.widget.setObjectName("widget")
+        self.formLayout = QtWidgets.QFormLayout(self.widget)
+        self.formLayout.setContentsMargins(0, 0, 0, 0)
+        self.formLayout.setObjectName("formLayout")
+        self.label = QtWidgets.QLabel(self.widget)
+        self.label.setObjectName("label")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label)
+        self.virus_api_key_value = QtWidgets.QLineEdit(self.widget)
+        self.virus_api_key_value.setObjectName("virus_api_key_value")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.virus_api_key_value)
+
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "API Key"))
+        self.groupBox.setTitle(_translate("Dialog", "API Key"))
+        self.label.setText(_translate("Dialog", "VirusTotal"))

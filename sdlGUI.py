@@ -7,7 +7,9 @@ from Gui.gui import *
 from Gui.GThread import *
 import configparser
 import tools.deduplicate as deduplicate
+from tools.netTools import test_proxy
 from tools import log
+from time import sleep
 
 """
 global variable
@@ -15,7 +17,72 @@ global variable
 config = configparser.ConfigParser()
 config.read("./conf/default.ini")
 proxies = config['proxies']
-virus_api_key = config['ApiKey']['virusApiKey']
+virus_api_key = config['ApiKey']['virusapikey']
+
+class SetAPI(QMainWindow, Ui_SetAPI):
+    def __init__(self):
+        super(SetAPI, self).__init__()
+        self.setupUi(self)
+        self.show_api_key()
+        self.buttonBox.rejected.connect(self.close)
+        self.buttonBox.accepted.connect(self.save_api_key)
+
+    def show_api_key(self):
+        """
+        获取api值并显示在UI界面
+        """
+        self.virus_api_key_value.setText(virus_api_key)
+
+    def save_api_key(self):
+        virus_api_key = self.virus_api_key_value.text()
+        config.set('ApiKey', 'virusapikey', virus_api_key)
+        with open('./conf/default.ini','w+') as fp:
+            config.write(fp)
+        self.close()
+
+
+class TestProxy(QMainWindow, Ui_TestProxy):
+    def __init__(self):
+        super(TestProxy, self).__init__()
+        self.setupUi(self)
+        self.buttonBox.rejected.connect(self.close)
+        self.buttonBox.accepted.connect(self.connect_test)
+
+    def connect_test(self):
+        url = self.lineEdit.text()
+        res = test_proxy(proxies, url)
+        QMessageBox.information(self, "Tip", res, QMessageBox.Yes | QMessageBox.No)
+
+
+class SetProxy(QMainWindow, Ui_SetProxy):
+    def __init__(self):
+        super(SetProxy, self).__init__()
+        self.setupUi(self)
+        self.show_proxies()
+
+        # 实例化TestProxy对象
+        self.test_proxy_window = TestProxy()
+
+        self.testProxyButton.clicked.connect(self.test_proxy_window.show)
+        self.buttonBox.rejected.connect(self.close)
+
+        # 确定按钮绑定存储代理的函数
+        self.buttonBox.accepted.connect(self.save_configure)
+
+    def show_proxies(self):
+        self.http_address.setText(proxies['http'].split(':')[1].strip('//'))
+        self.http_port.setValue(int(proxies['http'].split(':')[2]))
+        self.https_address.setText(proxies['https'].split(':')[1].strip('//'))
+        self.https_port.setValue(int(proxies['https'].split(':')[2]))
+
+    def save_configure(self):
+        proxies['http'] = 'http://'+self.http_address.text()+':'+self.http_port.text()
+        proxies['https'] = 'https://'+self.https_address.text()+':'+self.https_port.text()
+        config.set('proxies', 'http', proxies['http'])
+        config.set('proxies', 'https', proxies['https'])
+        with open('./conf/default.ini','w+') as fp:
+            config.write(fp)
+        self.close()
 
 
 class MyWindow(QMainWindow, Ui_MainWindow):
@@ -32,6 +99,14 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # 读取字典目录下所有字典名
         self.get_all_file_name()
 
+        # 实例化proxy对象和api_key对象
+        self.set_proxy_window = SetProxy()
+        self.set_api_window = SetAPI()
+
+        # 设置菜单
+        self.actionproxy.triggered.connect(self.set_proxy_window.show)
+        self.actionAPI_Key.triggered.connect(self.set_api_window.show)
+
         # start按钮绑定多线程槽函数，执行任务
         self.pushButton.clicked.connect(self.execute)
 
@@ -47,15 +122,19 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # 实例化多线程爆破子域名线程对象
         self.work = GMultiThreadBrute(self.domain, self.dict, self.thread_num)
         self.pBarWork = GProgressbar()
+        # 实例化状态栏线程对象
+        self.sBarWork = GStatusbar()
         # 启动线程
         self.work.start()
         self.pBarWork.start()
+        self.sBarWork.start()
         self.start_optional_features(proxies, virus_api_key)
         # 线程自定义信号连接的槽函数
         self.work.trigger.connect(self.addUrl)
         # work.signal --> pBarWork.signal --> update_progressBar
         self.pBarWork.progressBarValue.connect(self.work.progressBarValue)
         self.work.progressBarValue.connect(self.update_progressBar)
+
     def getDomain(self):
         """获取提交的domain值，并判断是否合法"""
         self.domain = self.lineEdit.text()
@@ -94,7 +173,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def alertTip(self):
         """完成任务后的提示框"""
-        tip = QMessageBox.information(self, "Tip", "已完成", QMessageBox.Yes | QMessageBox.No)
+        tip = QMessageBox.information(self, "Tip", "爆破已完成", QMessageBox.Yes | QMessageBox.No)
 
     def update_progressBar(self, i):
         """更新进度条的值"""
@@ -114,11 +193,17 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             search_engine.append("google")
         if search_engine:
             self.se_work = GSpider(self.domain, search_engine, proxies)
+            # 状态栏提示信息，信号传递方向：se_work.signal --> sBarWork.signal --> show_status_bar
+            self.sBarWork.statusBarValue.connect(self.se_work.trigger_tip)
+            self.se_work.trigger_tip.connect(self.show_status_bar)
             self.se_work.start()
-            self.se_work.trigger_subdomains.connect(self.get_spider_result)
+            self.se_work.trigger_subdomains.connect(self.get_dns_result)
         if self.checkBox_4.isChecked():
             log.write("DNS start")
             self.dns_work = GDns(self.domain, virus_api_key, proxies)
+            # 状态栏提示信息，信号传递方向：se_work.signal --> sBarWork.signal --> show_status_bar
+            self.sBarWork.statusBarValue.connect(self.se_work.trigger_tip)
+            self.se_work.trigger_tip.connect(self.show_status_bar)
             self.dns_work.start()
             self.dns_work.trigger_subdomains.connect(self.get_dns_result)
 
@@ -128,6 +213,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def get_dns_result(self, subdomains: list):
         self.itemmodel_1.setStringList(subdomains)
 
+    def show_status_bar(self, tip):
+        if tip == "start":
+            self.statusbar.showMessage("Spider or Dns resolution are running...")
+        if tip == "finish":
+            self.statusbar.showMessage("Spider or Dns resolution are finished!")
 
 
 

@@ -22,11 +22,3 @@ ns1
 vpn
 ns2
 www2
-mysql
-webdisk
-dev
-old
-news
-calendar
-shop
-potala

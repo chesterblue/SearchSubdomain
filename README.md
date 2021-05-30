@@ -1,4 +1,4 @@
-## Subdomain lookup V1.5
+## Subdomain lookup V1.6
 developing.......  
 The functions which are implemented:  
 Brute  
@@ -9,8 +9,10 @@ GUI(could select dictionary which you add by yourself)
 `-t domain name of the target website`  
 `-d brute dictionary[optional]`  
 `-n numbers of thread[optional]`  
-![Demonstration](https://github.com/chesterblue/photos/blob/master/subdomain.png)  
+`--se select use search engine[support google,baidu and bing now].e.g., --se google,baidu`  
+`--dns use dns resolution`   
+![Demonstration](./img/cmd1.png)  
 
 #### GUI:
-![Demonstration](https://github.com/chesterblue/photos/blob/master/GUI_2.png)
+![Demonstration](./img/gui1.png)
 

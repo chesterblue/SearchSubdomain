@@ -86,6 +86,9 @@ class SetProxy(QMainWindow, Ui_SetProxy):
 
 
 class MyWindow(QMainWindow, Ui_MainWindow):
+    brute_subdomains = []
+    dns_subdomains = []
+    spider_subdomains = []
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
@@ -102,10 +105,14 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # 实例化proxy对象和api_key对象
         self.set_proxy_window = SetProxy()
         self.set_api_window = SetAPI()
+        # 实例化文件对象
+        self.export_result_window = QtWidgets.QFileDialog(self,'导出结果')
 
         # 设置菜单
         self.actionproxy.triggered.connect(self.set_proxy_window.show)
         self.actionAPI_Key.triggered.connect(self.set_api_window.show)
+        # 工具菜单
+        self.actionexport.triggered.connect(self.export_results_to_file)
 
         # start按钮绑定多线程槽函数，执行任务
         self.pushButton.clicked.connect(self.execute)
@@ -153,18 +160,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         """获取用户输入的线程数"""
         self.thread_num = int(self.spinBox.text())
 
-    def addRes(self, url):
-        try:
-            for url in self.known_subdomain:
-                row = self.itemmodel.rowCount()
-                self.itemmodel.insertRow(row)
-                self.itemmodel.setData(self.itemmodel.index(row), url)
-        except:
-            pass
-
     def addUrl(self, url):
         """添加爆破的结果并输出"""
         if url != "finish":
+            # 存储爆破模块结果以便导出
+            self.brute_subdomains.append(url)
             row = self.itemmodel.rowCount()
             self.itemmodel.insertRow(row)
             self.itemmodel.setData(self.itemmodel.index(row), url)
@@ -197,7 +197,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.sBarWork.statusBarValue.connect(self.se_work.trigger_tip)
             self.se_work.trigger_tip.connect(self.show_status_bar)
             self.se_work.start()
-            self.se_work.trigger_subdomains.connect(self.get_dns_result)
+            self.se_work.trigger_subdomains.connect(self.show_spider_result)
         if self.checkBox_4.isChecked():
             log.write("DNS start")
             self.dns_work = GDns(self.domain, virus_api_key, proxies)
@@ -205,12 +205,16 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.sBarWork.statusBarValue.connect(self.se_work.trigger_tip)
             self.se_work.trigger_tip.connect(self.show_status_bar)
             self.dns_work.start()
-            self.dns_work.trigger_subdomains.connect(self.get_dns_result)
+            self.dns_work.trigger_subdomains.connect(self.show_dns_result)
 
-    def get_spider_result(self, subdomains: list):
+    def show_spider_result(self, subdomains: list):
+        # 存储爬虫模块结果以便导出
+        self.spider_subdomains.extend(subdomains)
         self.itemmodel_1.setStringList(subdomains)
 
-    def get_dns_result(self, subdomains: list):
+    def show_dns_result(self, subdomains: list):
+        # 存储DNS解析模块结果以便导出
+        self.dns_subdomains.extend(subdomains)
         self.itemmodel_1.setStringList(subdomains)
 
     def show_status_bar(self, tip):
@@ -218,6 +222,21 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.statusbar.showMessage("Spider or Dns resolution are running...")
         if tip == "finish":
             self.statusbar.showMessage("Spider or Dns resolution are finished!")
+
+    def export_results_to_file(self):
+        other_subdomains = self.spider_subdomains + self.dns_subdomains
+        other_subdomains = deduplicate.remove_duplicate_data(other_subdomains)
+        try:
+            file_name = self.export_result_window.getSaveFileName(self, '导出结果')[0]
+            with open(file_name, 'a+') as fp:
+                fp.write("----------------Brute results:-------------------\n")
+                for subdomain in self.brute_subdomains:
+                    fp.write(subdomain+'\n')
+                fp.write("-------------Spider or DNS resolution results:---------\n")
+                for subdomain in other_subdomains:
+                    fp.write(subdomain+'\n')
+        except:
+            pass
 
 
 

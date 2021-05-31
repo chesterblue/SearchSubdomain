@@ -111,9 +111,10 @@ class Ui_MainWindow(object):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 802, 23))
         self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        # -------------------------------start:settings menu-----------------------------------------------------------
         self.menu = QtWidgets.QMenu(self.menubar)
         self.menu.setObjectName("menu")
-        MainWindow.setMenuBar(self.menubar)
         self.actionproxy = QtWidgets.QAction(MainWindow)
         self.actionproxy.setObjectName("actionproxy")
         self.actionAPI_Key = QtWidgets.QAction(MainWindow)
@@ -121,6 +122,16 @@ class Ui_MainWindow(object):
         self.menu.addAction(self.actionproxy)
         self.menu.addAction(self.actionAPI_Key)
         self.menubar.addAction(self.menu.menuAction())
+        # ------------------------------end:settings menu--------------------------------------------------------------
+        # ------------------------------start:tool menu-------------------------------------------------------------
+        self.tool_menu = QtWidgets.QMenu(self.menubar)
+        self.tool_menu.setObjectName("toolMenu")
+        self.actionexport = QtWidgets.QAction(MainWindow)
+        self.actionexport.setObjectName("actionexport")
+        self.tool_menu.addAction(self.actionexport)
+        self.menubar.addAction(self.tool_menu.menuAction())
+
+        # -------------------------------end:tool menu--------------------------------------------------------------
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
@@ -143,6 +154,8 @@ class Ui_MainWindow(object):
         self.menu.setTitle(_translate("MainWindow", "设置"))
         self.actionproxy.setText(_translate("MainWindow", "代理"))
         self.actionAPI_Key.setText(_translate("MainWindow", "API Key"))
+        self.tool_menu.setTitle(_translate("MainWindow", "工具"))
+        self.actionexport.setText(_translate("MainWindow", "导出结果"))
 
 
 class Ui_SetProxy(object):

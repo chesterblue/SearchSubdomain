@@ -216,7 +216,9 @@ class GDns(QThread):
         self.trigger_tip.emit("start")
         # VirusTotal DNS resolution
         VirusTotal = virusTotal.Client(self.domain, self.virus_api_key)
-        self.subdomains.extend(VirusTotal.run())
+        results = VirusTotal.run()
+        if results:
+            self.subdomains.extend(results)
         # threadcrowd DNS resolution
         ThreadCrowd = threadcrowd.Client(self.domain, self.proxies)
         self.subdomains.extend(ThreadCrowd.run())

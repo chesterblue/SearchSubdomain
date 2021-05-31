@@ -34,9 +34,9 @@ class Client():
             jdata = json.loads(html)
             self.get_subdomains(jdata)
         except (Timeout, ConnectionError):
-            print("Proxy error or Internet error!")
+            print("DNS-threadcrowd:Proxy error or Internet error!")
         except Exception:
-            print("Unknown error!")
+            print("DNS-threadcrowd:Unknown error!")
         except json.decoder.JSONDecodeError:
             print("")
         finally:

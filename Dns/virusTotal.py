@@ -39,7 +39,7 @@ class Client():
             self.get_subdomain(jdata)
             return jdata
         except (Timeout, ConnectionError):
-            print("Proxy error or Internet error!")
+            print("DNS-virusTotal:Proxy error or Internet error!")
             return None
 
     def is_have_next(self, jdata):

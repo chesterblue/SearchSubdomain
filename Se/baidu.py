@@ -50,13 +50,13 @@ class Client():
                 html = BeautifulSoup(html, features="html.parser")
                 self.find_subdomain(html)
             except Timeout:
-                log.write("Timeout!")
+                log.write("spider-baidu:Timeout!")
             except ConnectionError:
-                log.write("Internet Error!")
+                log.write("spider-baidu:Internet Error!")
             except TypeError:
-                log.write("Type Error!")
+                log.write("spider-baidu:Type Error!")
             except Exception:
-                log.write("Unknown Error!")
+                log.write("spider-baidu:Unknown Error!")
         return self.subdomains
 
     def find_subdomain(self, html):

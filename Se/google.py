@@ -34,13 +34,13 @@ class Client():
                 html = BeautifulSoup(html, features="html.parser")
                 self.find_subdomain(html)
             except Timeout:
-                log.write("Timeout!")
+                log.write("spider:google:Timeout!")
             except ConnectionError:
-                log.write("Internet Error!")
+                log.write("spider:google:Internet Error!")
             except TypeError:
-                log.write("Type Error!")
+                log.write("spider:google:Type Error!")
             except Exception:
-                log.write("Unknown Error!")
+                log.write("spider:google:Unknown Error!")
         return self.subdomains
 
     def find_subdomain(self, html):

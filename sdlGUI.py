@@ -107,6 +107,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.set_api_window = SetAPI()
         # 实例化文件对象
         self.export_result_window = QtWidgets.QFileDialog(self,'导出结果')
+        # 实例化状态栏线程对象
+        self.sBarWork = GStatusbar()
+        self.sBarWork.start()
 
         # 设置菜单
         self.actionproxy.triggered.connect(self.set_proxy_window.show)
@@ -120,22 +123,25 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def execute(self):
         # 获取用户输入的domain值
         self.getDomain()
+        if self.brute_checkBox.isChecked():
+            self.start_brute()
+        self.start_optional_features(proxies, virus_api_key)
+
+
+    def start_brute(self):
         # 获取用户在comboBox选择的字典名
         self.getDictname()
         # 获取用户在spinBox中设置的线程数
         self.getThreadnum()
         # 实例化爆破子域名线程对象
-        self.work = GThreadBrute(self.domain,self.dict)
+        self.work = GThreadBrute(self.domain, self.dict)
         # 实例化多线程爆破子域名线程对象
         self.work = GMultiThreadBrute(self.domain, self.dict, self.thread_num)
         self.pBarWork = GProgressbar()
-        # 实例化状态栏线程对象
-        self.sBarWork = GStatusbar()
+
         # 启动线程
         self.work.start()
         self.pBarWork.start()
-        self.sBarWork.start()
-        self.start_optional_features(proxies, virus_api_key)
         # 线程自定义信号连接的槽函数
         self.work.trigger.connect(self.addUrl)
         # work.signal --> pBarWork.signal --> update_progressBar
@@ -202,8 +208,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             log.write("DNS start")
             self.dns_work = GDns(self.domain, virus_api_key, proxies)
             # 状态栏提示信息，信号传递方向：se_work.signal --> sBarWork.signal --> show_status_bar
-            self.sBarWork.statusBarValue.connect(self.se_work.trigger_tip)
-            self.se_work.trigger_tip.connect(self.show_status_bar)
+            self.sBarWork.statusBarValue.connect(self.dns_work.trigger_tip)
+            self.dns_work.trigger_tip.connect(self.show_status_bar)
             self.dns_work.start()
             self.dns_work.trigger_subdomains.connect(self.show_dns_result)
 

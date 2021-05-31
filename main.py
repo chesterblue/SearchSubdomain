@@ -76,21 +76,29 @@ def data_processing(web_subdomains):
     for subdomain in web_subdomains:
         print(subdomain)
 
+def write_subdomains_to_file(filename: str, subdomains: list):
+    with open("./sites/"+filename, "a+") as fp:
+        fp.write("------------------------web spider or dns resolution:--------------------------\n")
+        for subdomain in subdomains:
+            fp.write(subdomain+'\n')
+
 
 @click.command()
 @click.option("-t", required="true", help="domain name of the target website")
 @click.option("-d", default=default_dict, help="brute dictionary")
 @click.option("-n", default=default_thread_num, help="number of threads")
+@click.option("--bt", is_flag=True, help="use bruting subdomain")
 @click.option("--se", help="select use search engine[support google,baidu and bing now]. e.g., --se google,baidu")
 @click.option("--dns", is_flag=True, help="use dns resolution")
-def main(t, d, n, se, dns):
+def main(t, d, n, bt, se, dns):
     domain = t
-    dict_name = d
-    thread_num = n
     print(logo)
     log.write("print logo")
-    brute(domain, dict_name, thread_num)
     web_subdomains = []
+    if bt:
+        dict_name = d
+        thread_num = n
+        brute(domain, dict_name, thread_num)
     # 如果使用se参数，执行爬虫功能
     if se:
         web_subdomains.extend(start_search_engine(se, domain))
@@ -99,6 +107,7 @@ def main(t, d, n, se, dns):
         web_subdomains.extend(dns_resolution(domain))
     if se or dns:
         data_processing(web_subdomains)
+        write_subdomains_to_file(domain+'.txt', web_subdomains)
 
 
 if __name__ == "__main__":

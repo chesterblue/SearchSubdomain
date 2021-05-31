@@ -77,6 +77,9 @@ class Ui_MainWindow(object):
         # checkBox水平布局区域-----------------------------start-------------------------------
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.brute_checkBox = QtWidgets.QCheckBox()
+        self.brute_checkBox.setObjectName("brute_checkBox")
+        self.horizontalLayout_2.addWidget(self.brute_checkBox)
         self.checkBox_1 = QtWidgets.QCheckBox()
         self.checkBox_1.setObjectName("checkBox_1")
         self.horizontalLayout_2.addWidget(self.checkBox_1)
@@ -147,6 +150,7 @@ class Ui_MainWindow(object):
         self.comboBox.setPlaceholderText(_translate("MainWindow", "common.txt"))
         self.label_2.setText(_translate("MainWindow", "线程"))
         self.pushButton.setText(_translate("MainWindow", "Start"))
+        self.brute_checkBox.setText(_translate("MainWindow", "Brute"))
         self.checkBox_1.setText(_translate("MainWindow", "Baidu"))
         self.checkBox_2.setText(_translate("MainWindow", "Bing"))
         self.checkBox_3.setText(_translate("MainWindow", "Google"))

@@ -95,12 +95,12 @@ def connect_site(search_queue, domain):
         url_s = "https://%s.%s/" % (sdom, domain)
         url = "http://%s.%s/" % (sdom, domain)
         code = request_head_s(url_s)
-        log.write(url_s)
+        # log.write(url_s)
         if isOK(code):
             known_subdomain.append(url_s)
             printRightResult(url_s)
         else:
-            log.write(url)
+            # log.write(url)
             code = request_head(url)
             if isOK(code):
                 known_subdomain.append(url)

@@ -118,13 +118,13 @@ class GMultiThreadBrute(QThread):
             url_s = "https://%s.%s/" % (sdom, domain)
             url = "http://%s.%s/" % (sdom, domain)
             code = sdl.request_head_s(url_s)
-            log.write(url_s)
+            # log.write(url_s)
             if sdl.isOK(code):
                 self.known_subdomain.append(url_s)
                 # sdl.printRightResult(url_s)
                 self.trigger.emit(url_s)
             else:
-                log.write(url)
+                # log.write(url)
                 code = sdl.request_head(url)
                 if sdl.isOK(code):
                     self.known_subdomain.append(url)
@@ -193,7 +193,7 @@ class GSpider(QThread):
                 self.subdomains.extend(Bing.run())
         self.subdomains = deduplicate.remove_duplicate_data(self.subdomains)
         self.trigger_subdomains.emit(self.subdomains)
-        log.write("Spider finished")
+        log.write("[UI]Spider finished")
         self.trigger_tip.emit("finish")
         # return self.subdomains
 
@@ -224,7 +224,7 @@ class GDns(QThread):
         self.subdomains.extend(ThreadCrowd.run())
         self.subdomains = deduplicate.remove_duplicate_data(self.subdomains)
         self.trigger_subdomains.emit(self.subdomains)
-        log.write("DNS finished")
+        log.write("[UI]DNS finished")
         self.trigger_tip.emit("finish")
         # return self.subdomains
 

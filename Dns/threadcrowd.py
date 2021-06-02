@@ -7,6 +7,7 @@ from requests.exceptions import Timeout, ConnectionError
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from requests.packages.urllib3 import disable_warnings
 import json
+from tools import log
 
 # 禁用由于不验证ssl证书导致的警告
 disable_warnings(InsecureRequestWarning)
@@ -34,11 +35,11 @@ class Client():
             jdata = json.loads(html)
             self.get_subdomains(jdata)
         except (Timeout, ConnectionError):
-            print("DNS-threadcrowd:Proxy error or Internet error!")
+            log.write("DNS-threadcrowd:Proxy error or Internet error!")
         except Exception:
-            print("DNS-threadcrowd:Unknown error!")
+            log.write("DNS-threadcrowd:Unknown error!")
         except json.decoder.JSONDecodeError:
-            print("")
+            log.write("Don't have enough data to decode.Maybe it passed CDN.")
         finally:
             return self.subdomains
 

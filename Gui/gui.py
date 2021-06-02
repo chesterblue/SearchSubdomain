@@ -144,7 +144,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Subdomain lookup V1.7.2"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Subdomain lookup V1.7.3"))
         self.label.setText(_translate("MainWindow", "站点"))
         self.label_3.setText(_translate("MainWindow", "字典"))
         self.comboBox.setPlaceholderText(_translate("MainWindow", "common.txt"))

@@ -3,7 +3,9 @@ developing.......
 The functions which are implemented:  
 Brute  
 multiple thread  
-GUI(could select dictionary which you add by yourself)
+GUI(could select dictionary which you add by yourself)  
+Spider  
+DNS resolution API
 ### Usage
 #### cmd\shell:
 `-t domain name of the target website`  

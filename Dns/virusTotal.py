@@ -11,7 +11,7 @@ headers = {
 }
 
 API_KEY_WRONG_TIP = "VirusTotal:API Key is wrong!Please enter right API key!If you don't have API key,you won't use" \
-                    " DNS resolution"
+                    " DNS resolution."
 
 class Client():
     def __init__(self, domain: str, key: str):
@@ -36,7 +36,6 @@ class Client():
                     break
             return self.subdomains
         else:
-            print(API_KEY_WRONG_TIP)
             log.write(API_KEY_WRONG_TIP)
 
     def connect_site_to_get_data(self, target_url):
@@ -65,7 +64,6 @@ class Client():
                 self.subdomains.append(link['id'])
         except KeyError:
             log.write("Maybe you have not enough API quota allowances.Or your network is not good.")
-
 
     def is_key_right(self):
         test_url = "https://www.virustotal.com/api/v3/domains/baidu.com/subdomains"

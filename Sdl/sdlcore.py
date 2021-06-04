@@ -1,10 +1,15 @@
 # @Author: chesterblue
 
-import os, click, queue
-from tools import log
-from tools.cmdColor import printGreen, printRed
+import os, platform
 from requests import head
 from threading import Thread
+sys = platform.system()
+if sys == "Windows":
+    from tools.cmdColor import printGreen, printRed
+elif sys == "Linux":
+    from tools.unixColor import printGreen, printRed
+else:
+    print("Unadapted system:%s" % sys)
 
 '''global variate'''
 logo = r"""         _                 _             _                
@@ -64,13 +69,13 @@ def request_head(url):
 # 输出存在此子域名的结果
 def printRightResult(domain):
     print(domain, end=" ")
-    printGreen("[*]\n")
+    printGreen("[*]")
 
 
 # 输出不存在此子域名的结果
 def printErrorResult(domain):
     print(domain, end=" ")
-    printRed("[x]\n")
+    printRed("[x]")
 
 
 # 结果保存到文件

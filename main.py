@@ -2,7 +2,7 @@
 # @File Name:main.py
 
 from Sdl.sdlcore import *
-from Se import *
+import click, queue
 import tools.log as log
 from Se import baidu, bing, google
 from Dns import threadcrowd, virusTotal

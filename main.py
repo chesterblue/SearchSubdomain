@@ -4,6 +4,7 @@
 from Sdl.sdlcore import *
 import click, queue
 import tools.log as log
+from tools.makeDir import makeLogDir, makeSitesDir
 from Se import baidu, bing, google
 from Dns import threadcrowd, virusTotal
 import configparser
@@ -91,6 +92,8 @@ def write_subdomains_to_file(filename: str, subdomains: list):
 @click.option("--se", help="select use search engine[support google,baidu and bing now]. e.g., --se google,baidu")
 @click.option("--dns", is_flag=True, help="use dns resolution")
 def main(t, d, n, bt, se, dns):
+    makeLogDir()
+    makeSitesDir()
     domain = t
     print(logo)
     log.write("print logo")

@@ -9,7 +9,7 @@ import configparser
 import tools.deduplicate as deduplicate
 from tools.netTools import test_proxy
 from tools import log
-from time import sleep
+from tools.makeDir import makeLogDir, makeSitesDir
 
 """
 global variable
@@ -297,6 +297,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
 
 if __name__ == '__main__':
+    makeLogDir()
+    makeSitesDir()
     app = QApplication(sys.argv)
     myWin = MyWindow()
     myWin.show()

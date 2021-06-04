@@ -10,6 +10,8 @@ headers = {
     'X-Apikey': ''
 }
 
+API_KEY_WRONG_TIP = "VirusTotal:API Key is wrong!Please enter right API key!If you don't have API key,you won't use" \
+                    " DNS resolution"
 
 class Client():
     def __init__(self, domain: str, key: str):
@@ -33,6 +35,9 @@ class Client():
                 else:
                     break
             return self.subdomains
+        else:
+            print(API_KEY_WRONG_TIP)
+            log.write(API_KEY_WRONG_TIP)
 
     def connect_site_to_get_data(self, target_url):
         try:

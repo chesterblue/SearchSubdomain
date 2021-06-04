@@ -75,6 +75,9 @@ class GProgressbar(QThread):
     def __init__(self):
         super(GProgressbar, self).__init__()
 
+    def __del__(self):
+        self.wait()
+
 
 class GMultiThreadBrute(QThread):
     # 自定义信号对象。参数str就代表这个信号可以传一个字符串

@@ -91,6 +91,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     spider_subdomains = []
     # 记录并通过此判断任务完成数在状态栏提示用户
     finished_task = 0
+    # 记录选择的任务数
+    clicked_task = 0
     def __init__(self, parent=None):
         super(MyWindow, self).__init__(parent)
         self.setupUi(self)
@@ -126,6 +128,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # 获取用户输入的domain值
         self.getDomain()
         if self.domain_is_right():
+            self.reset_listView()
             log.write("["+self.domain+"]")
             if self.brute_checkBox.isChecked():
                 self.start_brute()
@@ -137,22 +140,29 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def start_brute(self):
         # 获取用户在comboBox选择的字典名
         self.getDictname()
-        # 获取用户在spinBox中设置的线程数
-        self.getThreadnum()
-        # 实例化爆破子域名线程对象
-        self.work = GThreadBrute(self.domain, self.dict)
-        # 实例化多线程爆破子域名线程对象
-        self.work = GMultiThreadBrute(self.domain, self.dict, self.thread_num)
-        self.pBarWork = GProgressbar()
+        if self.dict:
+            # 获取用户在spinBox中设置的线程数
+            self.getThreadnum()
+            # 实例化爆破子域名线程对象
+            # self.work = GThreadBrute(self.domain, self.dict)
+            # 实例化多线程爆破子域名线程对象
+            self.work = GMultiThreadBrute(self.domain, self.dict, self.thread_num)
+            # self.pBarWork = GProgressbar()
 
-        # 启动线程
-        self.work.start()
-        self.pBarWork.start()
-        # 线程自定义信号连接的槽函数
-        self.work.trigger.connect(self.addUrl)
-        # work.signal --> pBarWork.signal --> update_progressBar
-        self.pBarWork.progressBarValue.connect(self.work.progressBarValue)
-        self.work.progressBarValue.connect(self.update_progressBar)
+            # 启动线程
+            self.work.start()
+            # self.pBarWork.start()
+            # 线程自定义信号连接的槽函数
+            self.work.trigger.connect(self.addUrl)
+            # work.signal --> pBarWork.signal --> update_progressBar
+            # self.pBarWork.progressBarValue.connect(self.work.progressBarValue)
+            self.work.progressBarValue.connect(self.update_progressBar)
+        else:
+            self.alertTip("未选择字典文件")
+
+    def reset_listView(self):
+        self.itemmodel.removeRows(0,self.itemmodel.rowCount())
+        self.itemmodel_1.removeRows(0,self.itemmodel_1.rowCount())
 
     def getDomain(self):
         """获取提交的domain值，并判断是否合法"""
@@ -174,7 +184,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
 
     def getDictname(self):
         """获取选择的字典文件"""
-        self.dict = "./dict/" + self.comboBox.currentText()
+        if self.comboBox.currentText():
+            self.dict = "./dict/" + self.comboBox.currentText()
+        else:
+            self.dict = False
 
     def getThreadnum(self):
         """获取用户输入的线程数"""
@@ -189,10 +202,11 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.itemmodel.insertRow(row)
             self.itemmodel.setData(self.itemmodel.index(row), url)
         else:
+            # self.pBarWork.wait(1)
             self.alertTip("爆破已完成")
 
     def alertTip(self, msg: str):
-        """完成任务后的信心提示框"""
+        """完成任务后的信息提示框"""
         tip = QMessageBox.information(self, "Tip", msg, QMessageBox.Yes | QMessageBox.No)
 
     def alertError(self, msg: str):
@@ -216,6 +230,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             log.write("[UI]google start")
             search_engine.append("google")
         if search_engine:
+            self.clicked_task += 1
             self.se_work = GSpider(self.domain, search_engine, proxies)
             # 状态栏提示信息，信号传递方向：se_work.signal --> sBarWork.signal --> show_status_bar
             self.sBarWork.statusBarValue.connect(self.se_work.trigger_tip)
@@ -223,6 +238,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.se_work.start()
             self.se_work.trigger_subdomains.connect(self.show_spider_result)
         if self.checkBox_4.isChecked():
+            self.clicked_task += 1
             log.write("[UI]DNS start")
             self.dns_work = GDns(self.domain, virus_api_key, proxies)
             # 状态栏提示信息，信号传递方向：se_work.signal --> sBarWork.signal --> show_status_bar
@@ -260,7 +276,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
             self.statusbar.showMessage("Spider or Dns resolution are running...")
         if tip == "finish":
             self.finished_task += 1
-            if self.finished_task == 2:
+            if self.finished_task == self.clicked_task:
                 self.statusbar.showMessage("Spider or Dns resolution are finished!")
 
     def export_results_to_file(self):

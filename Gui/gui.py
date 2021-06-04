@@ -318,4 +318,4 @@ class Ui_SetAPI(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "API Key"))
         self.groupBox.setTitle(_translate("Dialog", "API Key"))
-        self.label.setText(_translate("Dialog", "VirusTotal"))
+        self.label.setText(_translate("Dialog", "VirusTotal:"))

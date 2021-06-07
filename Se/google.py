@@ -30,7 +30,7 @@ class Client():
             page_num = num * 10
             target = self.base_url % (self.domain, page_num)
             try:
-                html = s.get(target, headers=self.headers, proxies=self.proxies).content.decode()
+                html = s.get(target, headers=self.headers, proxies=self.proxies, verify=False).content.decode()
                 html = BeautifulSoup(html, features="html.parser")
                 self.find_subdomain(html)
             except Timeout:
@@ -39,8 +39,9 @@ class Client():
                 log.write("spider:google:Internet Error!")
             except TypeError:
                 log.write("spider:google:Type Error!")
-            except Exception:
+            except Exception as e:
                 log.write("spider:google:Unknown Error!")
+                print(e)
         return self.subdomains
 
     def find_subdomain(self, html):

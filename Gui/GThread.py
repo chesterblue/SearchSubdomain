@@ -8,8 +8,9 @@ import Sdl.sdlcore as sdl
 from threading import Thread
 from Se import baidu, bing, google
 from Dns import threadcrowd, virusTotal
-import queue
+import queue, socket
 import tools.deduplicate as deduplicate
+from tools.portScan import Scanner, MultiScanner
 
 
 class GThreadBrute(QThread):
@@ -238,3 +239,47 @@ class GStatusbar(QThread):
 
     def __init__(self):
         super(GStatusbar, self).__init__()
+
+
+class GMultiScanner(QThread):
+    send_port = pyqtSignal(int)
+    send_tip = pyqtSignal(bool)
+
+    def __init__(self, host, port_list, thread_num=5, timeout_time=2):
+        super(GMultiScanner, self).__init__()
+        self.exist_ports = []
+        self.host = host
+        self.port_list = port_list
+        self.thread_num = thread_num
+        self.timeout_time = timeout_time
+
+    def run(self) -> None:
+        self.execute()
+
+    def loop_scan_port(self):
+        while not self.port_queue.empty():
+            port = self.port_queue.get(block=True, timeout=1)
+            scan_port = socket.socket()
+            try:
+                scan_port.settimeout(self.timeout_time)
+                scan_port.connect((self.host, port))
+                self.exist_ports.append(port)
+                self.send_port.emit(port)
+                scan_port.close()
+            except (TimeoutError, socket.timeout):
+                scan_port.close()
+            self.port_queue.task_done()
+
+    def init_queue(self, port_queue, port_list):
+        for port in port_list:
+            port_queue.put(port)
+        return port_queue
+
+    def execute(self) -> None:
+        self.port_queue = queue.Queue(len(self.port_list))
+        self.port_queue = self.init_queue(self.port_queue, self.port_list)
+        for i in range(self.thread_num):
+            t = Thread(target=self.loop_scan_port)
+            t.start()
+        self.port_queue.join()
+        self.send_tip.emit(True)

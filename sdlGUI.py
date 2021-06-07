@@ -10,6 +10,7 @@ import tools.deduplicate as deduplicate
 from tools.netTools import test_proxy
 from tools import log
 from tools.makeDir import makeLogDir, makeSitesDir
+from tools.serviceProb import *
 
 """
 global variable
@@ -18,6 +19,40 @@ config = configparser.ConfigParser()
 config.read("./conf/default.ini")
 proxies = config['proxies']
 virus_api_key = config['ApiKey']['virusapikey']
+
+
+class PortScan(QMainWindow, Ui_portScan):
+    def __init__(self):
+        super(PortScan, self).__init__()
+        self.setupUi(self)
+        self.resetTable()
+        self.buttonBox.accepted.connect(self.execute)
+        self.buttonBox.rejected.connect(self.close)
+
+    def execute(self):
+        self.resetTable()
+        host = self.domain_lineEdit.text()
+        port_list = [int(port) for port in self.port_textBrowser.toPlainText().split(',')]
+        self.scanner = GMultiScanner(host, port_list)
+        self.scanner.start()
+        self.scanner.send_port.connect(self.addItem)
+        self.scanner.send_tip.connect(self.prompt_finish)
+
+    def addItem(self, port):
+        index =count = self.result_tableWidget.rowCount()
+        self.result_tableWidget.setRowCount(count+1)
+        Item = QtWidgets.QTableWidgetItem(str(port))
+        self.result_tableWidget.setItem(index, 0, Item)
+        Item = QtWidgets.QTableWidgetItem(service_identity[port])
+        self.result_tableWidget.setItem(index, 1, Item)
+
+    def resetTable(self):
+        self.result_tableWidget.setRowCount(0)
+
+    def prompt_finish(self, sign):
+        if sign:
+            QMessageBox.information(self, "Tip", "扫描完成", QMessageBox.Yes | QMessageBox.No)
+
 
 class SetAPI(QMainWindow, Ui_SetAPI):
     def __init__(self):
@@ -70,17 +105,29 @@ class SetProxy(QMainWindow, Ui_SetProxy):
         self.buttonBox.accepted.connect(self.save_configure)
 
     def show_proxies(self):
-        self.http_address.setText(proxies['http'].split(':')[1].strip('//'))
-        self.http_port.setValue(int(proxies['http'].split(':')[2]))
-        self.https_address.setText(proxies['https'].split(':')[1].strip('//'))
-        self.https_port.setValue(int(proxies['https'].split(':')[2]))
+        if proxies['model'] == 'http':
+            self.http_radioButton.setChecked(True)
+        if proxies['model'] == 'socks5':
+            self.socks5_radioButton.setChecked(True)
+        port = int(proxies['http'].split(':')[-1])
+        self.http_address.setText(proxies['http'].split('//')[1].strip(':'+str(port)))
+        self.http_port.setValue(port)
 
     def save_configure(self):
-        proxies['http'] = 'http://'+self.http_address.text()+':'+self.http_port.text()
-        proxies['https'] = 'https://'+self.https_address.text()+':'+self.https_port.text()
+        model1 = 'http'
+        model2 = 'https'
+        if self.http_radioButton.isChecked():
+            model1 = 'http'
+            model2 = 'https'
+        if self.socks5_radioButton.isChecked():
+            model1 = model2 = 'socks5'
+        proxies['http'] = model1 + '://' + self.http_address.text() + ':' + self.http_port.text()
+        proxies['https'] = model2 + '://' + self.http_address.text() + ':' + self.http_port.text()
+        proxies['model'] = model1
         config.set('proxies', 'http', proxies['http'])
         config.set('proxies', 'https', proxies['https'])
-        with open('./conf/default.ini','w+') as fp:
+        config.set('proxies', 'model', proxies['model'])
+        with open('./conf/default.ini', 'w+') as fp:
             config.write(fp)
         self.close()
 
@@ -111,6 +158,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.set_api_window = SetAPI()
         # 实例化文件对象
         self.export_result_window = QtWidgets.QFileDialog(self,'导出结果')
+        # 实例化端口扫描对象
+        self.port_scan_widow = PortScan()
         # 实例化状态栏线程对象
         self.sBarWork = GStatusbar()
         self.sBarWork.start()
@@ -120,6 +169,7 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         self.actionAPI_Key.triggered.connect(self.set_api_window.show)
         # 工具菜单
         self.actionexport.triggered.connect(self.export_results_to_file)
+        self.actionportscan.triggered.connect(self.init_port_scan_window)
 
         # start按钮绑定多线程槽函数，执行任务
         self.pushButton.clicked.connect(self.execute)
@@ -294,6 +344,9 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         except:
             pass
 
+    def init_port_scan_window(self):
+        self.port_scan_widow.resetTable()
+        self.port_scan_widow.show()
 
 
 if __name__ == '__main__':

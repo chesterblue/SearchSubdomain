@@ -389,6 +389,12 @@ class Ui_about(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(629, 327)
+        # 禁止最大化按钮
+        Dialog.setWindowFlags(QtCore.Qt.WindowMinimizeButtonHint | QtCore.Qt.WindowCloseButtonHint)
+        # 禁止拉伸窗口大小
+        Dialog.setFixedSize(Dialog.width(), Dialog.height())
+        # 设置窗口图标
+        Dialog.setWindowIcon(QtGui.QIcon(IconImg))
         self.textBrowser = QtWidgets.QTextBrowser(Dialog)
         self.textBrowser.setGeometry(QtCore.QRect(-1, -1, 631, 291))
         self.textBrowser.setObjectName("textBrowser")

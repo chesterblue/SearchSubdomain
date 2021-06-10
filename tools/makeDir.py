@@ -3,16 +3,16 @@
 import os
 
 def makeLogDir():
-    if os.path.exists("../log"):
+    if os.path.exists("./log"):
         pass
     else:
-        os.mkdir("../log")
+        os.mkdir("./log")
 
 def makeSitesDir():
-    if os.path.exists("../sites"):
+    if os.path.exists("./sites"):
         pass
     else:
-        os.mkdir("../sites")
+        os.mkdir("./sites")
 
 
 if __name__ == '__main__':

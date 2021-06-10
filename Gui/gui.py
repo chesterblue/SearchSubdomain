@@ -138,6 +138,14 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.tool_menu.menuAction())
 
         # -------------------------------end:tool menu--------------------------------------------------------------
+        # --------------------------------start:help menu------------------------------------------------------------
+        self.help_menu = QtWidgets.QMenu(self.menubar)
+        self.help_menu.setObjectName("helpMenu")
+        self.actionabout = QtWidgets.QAction(MainWindow)
+        self.actionabout.setObjectName("actionabout")
+        self.help_menu.addAction(self.actionabout)
+        self.menubar.addAction(self.help_menu.menuAction())
+        # --------------------------------end:help menu--------------------------------------------------------------
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
@@ -164,6 +172,8 @@ class Ui_MainWindow(object):
         self.tool_menu.setTitle(_translate("MainWindow", "工具"))
         self.actionexport.setText(_translate("MainWindow", "导出结果"))
         self.actionportscan.setText(_translate("MainWindow", "端口扫描"))
+        self.help_menu.setTitle(_translate("MainWindow", "帮助"))
+        self.actionabout.setText(_translate("MainWindow", "关于"))
 
 
 class Ui_SetProxy(object):
@@ -373,3 +383,33 @@ class Ui_portScan(object):
         self.port_label.setText(_translate("Form", "port"))
         self.port_textBrowser.setText("80,8080,445,21,22,23,6379,3306,1521,1433")
         # self.port_textBrowser.setTextCursor(Qt.CrossCursor)
+
+
+class Ui_about(object):
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(629, 327)
+        self.textBrowser = QtWidgets.QTextBrowser(Dialog)
+        self.textBrowser.setGeometry(QtCore.QRect(-1, -1, 631, 291))
+        self.textBrowser.setObjectName("textBrowser")
+        self.pushButton = QtWidgets.QPushButton(Dialog)
+        self.pushButton.setGeometry(QtCore.QRect(536, 298, 83, 22))
+        self.pushButton.setObjectName("pushButton")
+
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        self.textBrowser.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<h2 align=\"center\" style=\" margin-top:0px; margin-bottom:16px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:125%; background-color:#ffffff;\"><span style=\" font-family:\'-apple-system\',\'BlinkMacSystemFont\',\'Segoe UI\',\'Helvetica\',\'Arial\',\'sans-serif\',\'Apple Color Emoji\',\'Segoe UI Emoji\'; font-size:x-large; font-weight:600; color:#24292e; background-color:#ffffff;\">Subdomain lookup V1.8.1</span></h2>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:16px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; line-height:125%; background-color:#ffffff;\"><span style=\" font-family:\'-apple-system\',\'BlinkMacSystemFont\',\'Segoe UI\',\'Helvetica\',\'Arial\',\'sans-serif\',\'Apple Color Emoji\',\'Segoe UI Emoji\'; font-size:11pt; color:#24292e; background-color:#ffffff;\">It is a powerful tool about searching subdomain name.</span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'-apple-system\',\'BlinkMacSystemFont\',\'Segoe UI\',\'Helvetica\',\'Arial\',\'sans-serif\',\'Apple Color Emoji\',\'Segoe UI Emoji\'; font-size:10pt; color:#24292e; background-color:#ffffff;\">Please abide by local laws and regulations when using this tool.If you need to test the tool,please build your own environment. </span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'-apple-system\',\'BlinkMacSystemFont\',\'Segoe UI\',\'Helvetica\',\'Arial\',\'sans-serif\',\'Apple Color Emoji\',\'Segoe UI Emoji\'; font-size:10pt; color:#24292e; background-color:#ffffff;\">If you have any illegal behavior in the process of using this tool, you need to take the corresponding consequences yourself, and I will not take any legal and joint liabilities. </span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'-apple-system\',\'BlinkMacSystemFont\',\'Segoe UI\',\'Helvetica\',\'Arial\',\'sans-serif\',\'Apple Color Emoji\',\'Segoe UI Emoji\'; font-size:10pt; color:#24292e; background-color:#ffffff;\">使用此工具时请遵守当地法律。如果你需要测试此工具，请自行搭建测试环境。 </span></p>\n"
+"<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'-apple-system\',\'BlinkMacSystemFont\',\'Segoe UI\',\'Helvetica\',\'Arial\',\'sans-serif\',\'Apple Color Emoji\',\'Segoe UI Emoji\'; font-size:10pt; color:#24292e; background-color:#ffffff;\">如果在使用过程中有任何违法行为，自行承担相应的法律责任，与本人无关。</span></p></body></html>"))
+        self.pushButton.setText(_translate("Dialog", "确定"))

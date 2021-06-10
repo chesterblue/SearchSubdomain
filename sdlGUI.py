@@ -21,6 +21,13 @@ proxies = config['proxies']
 virus_api_key = config['ApiKey']['virusapikey']
 
 
+class About(QMainWindow, Ui_about):
+    def __init__(self):
+        super(About, self).__init__()
+        self.setupUi(self)
+        self.pushButton.clicked.connect(self.close)
+
+
 class PortScan(QMainWindow, Ui_portScan):
     def __init__(self):
         super(PortScan, self).__init__()
@@ -170,6 +177,8 @@ class MyWindow(QMainWindow, Ui_MainWindow):
         # 工具菜单
         self.actionexport.triggered.connect(self.export_results_to_file)
         self.actionportscan.triggered.connect(self.init_port_scan_window)
+        # 帮助菜单
+        self.actionabout.triggered.connect(self.show_about)
 
         # start按钮绑定多线程槽函数，执行任务
         self.pushButton.clicked.connect(self.execute)
@@ -347,6 +356,10 @@ class MyWindow(QMainWindow, Ui_MainWindow):
     def init_port_scan_window(self):
         self.port_scan_widow.resetTable()
         self.port_scan_widow.show()
+
+    def show_about(self):
+        self.about_window = About()
+        self.about_window.show()
 
 
 if __name__ == '__main__':
